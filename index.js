@@ -57,7 +57,7 @@ app.post('/generate-image', async (req, res) => {
       await fs.writeFile(filePath, buffer);
 
       // Respond with the URL to the generated image
-      res.status(200).json({ imageUrl: `https://whatsgenie-pi.onrender.com//images/personalized_image/${uniqueID}.png` });
+      res.status(200).json({ imageUrl: `https://whatsgenie-pi.onrender.com/images/personalized_image/${uniqueID}.png` });
     });
 
   } catch (err) {
