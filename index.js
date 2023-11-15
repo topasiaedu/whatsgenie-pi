@@ -39,7 +39,7 @@ app.post('/generate-image', async (req, res) => {
     // Load the canvas state into the Fabric canvas
     canvas.loadFromJSON(canvasState, async () => {
       // Ensure the canvas background is white
-      // canvas.setBackgroundColor('white', canvas.renderAll.bind(canvas));
+      canvas.setBackgroundColor('white', canvas.renderAll.bind(canvas));
 
       // Convert the Fabric canvas to a PNG data URL
       const dataUrl = canvas.toDataURL({ format: 'png', quality: 1 });
