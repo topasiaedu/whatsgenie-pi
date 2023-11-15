@@ -18,6 +18,15 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 // Serve static images from the 'public' directory
 app.use('/images', express.static(path.join(__dirname, 'public')));
 
+
+// Assuming you have a font file named 'YourChineseFont.ttf' in the 'fonts' directory
+fabric.nodeCanvas.registerFont(__dirname + '/fonts/arial-unicode-ms.ttf', { family: 'Arial Unicode MS' });
+
+// Function to check if a string contains Chinese characters
+function containsChinese(text) {
+  return /[\u3400-\u9FBF]/.test(text);
+}
+
 // POST endpoint to generate an image based on canvas state
 app.post('/generate-image', async (req, res) => {
   try {
@@ -35,9 +44,22 @@ app.post('/generate-image', async (req, res) => {
 
     // Create a new Fabric canvas with dynamic dimensions
     const canvas = new fabric.StaticCanvas(null, { width, height, backgroundColor: 'white' });
-
+    
+    canvasState.objects.forEach((obj) => {
+      if (obj.type === 'textbox' && containsChinese(obj.text)) {
+        obj.fontFamily = 'Arial Unicode MS'; // Example: SimSun is a font that supports Chinese characters
+      }
+    });
     // Load the canvas state into the Fabric canvas
     canvas.loadFromJSON(canvasState, async () => {
+      // Update text objects to use a different font if they contain Chinese characters
+      canvas.forEachObject((obj) => {
+        if (obj.type === 'text' && containsChinese(obj.text)) {
+          console.log(obj.text)
+          obj.set('fontFamily', 'SimSun'); // Example: SimSun is a font that supports Chinese characters
+        }
+      });
+
       // Ensure the canvas background is white
       canvas.setBackgroundColor('white', canvas.renderAll.bind(canvas));
 
