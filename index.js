@@ -39,7 +39,7 @@ app.post('/generate-image', async (req, res) => {
     }
 
     // Dynamically set canvas dimensions based on the request
-    const width = canvasState.width || 889; // Default to 889 if width is not provided
+    const width = canvasState.width || 500; // Default to 889 if width is not provided
     const height = canvasState.height || 500; // Default to 500 if height is not provided
 
     // Create a new Fabric canvas with dynamic dimensions
