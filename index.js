@@ -93,3 +93,9 @@ app.post('/generate-image', async (req, res) => {
 app.listen(port, () => {
   console.log(`Image generation service running at http://localhost:${port}`);
 });
+
+
+// Welcome json response
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to the image generation service!' });
+});
