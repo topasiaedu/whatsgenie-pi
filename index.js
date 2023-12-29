@@ -4,10 +4,10 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs').promises;
 const path = require('path');
+const cron = require('node-cron');
 
 const app = express();
 const port = 3000;
-
 
 // Enable CORS for all routes
 app.use(cors());
@@ -95,8 +95,47 @@ app.listen(port, () => {
   console.log(`Image generation service running at http://localhost:${port}`);
 });
 
-
 // Welcome json response
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the image generation service!' });
+});
+
+// Define the directory where images are stored
+const IMAGE_DIR = 'public/personalized_image';
+const AGE_LIMIT = 3 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
+
+// Schedule a task to run every day at midnight (or any other interval)
+cron.schedule('0 0 * * *', function() {
+    console.log('Running the clean-up task every day at midnight');
+
+    fs.readdir(IMAGE_DIR, (err, files) => {
+        if (err) {
+            console.log('Error reading directory:', err);
+            return;
+        }
+
+        files.forEach(file => {
+            const filePath = path.join(IMAGE_DIR, file);
+            fs.stat(filePath, (err, stats) => {
+                if (err) {
+                    console.log('Error getting file stats:', err);
+                    return;
+                }
+
+                const now = new Date().getTime();
+                const modifiedTime = new Date(stats.mtime).getTime();
+                const age = now - modifiedTime;
+
+                if (age > AGE_LIMIT) {
+                    fs.unlink(filePath, err => {
+                        if (err) {
+                            console.log('Error deleting file:', err);
+                        } else {
+                            console.log('Deleted old file:', filePath);
+                        }
+                    });
+                }
+            });
+        });
+    });
 });
